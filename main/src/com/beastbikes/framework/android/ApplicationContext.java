@@ -1,0 +1,75 @@
+package com.beastbikes.framework.android;
+
+import android.app.Activity;
+import android.app.Application;
+import android.app.Application.ActivityLifecycleCallbacks;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.os.Bundle;
+
+/**
+ * An implementation of interface {@link ApplicationContext} for Android
+ * 
+ * @author johnson
+ * 
+ */
+public abstract class ApplicationContext extends Application implements
+		ActivityLifecycleCallbacks {
+
+	/**
+	 * Returns the value of the specified meta data
+	 * 
+	 * @param key
+	 *            The name of meta data
+	 * @param defaultValue
+	 *            The default value if the specified meta data not found
+	 * @return The value of the specified meta data, if not found, the
+	 *         {@code defaultValue} is returned.
+	 */
+	public String getMetaData(String key, String defaultValue) {
+		final String pkg = getPackageName();
+		final PackageManager pm = getPackageManager();
+
+		try {
+			final ApplicationInfo ai = pm.getApplicationInfo(pkg,
+					PackageManager.GET_META_DATA);
+			final Bundle metaData = ai.metaData;
+			if (null == metaData)
+				return null;
+
+			return metaData.getString(key, defaultValue);
+		} catch (NameNotFoundException e) {
+			return null;
+		}
+	}
+
+	@Override
+	public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
+	}
+
+	@Override
+	public void onActivityStarted(Activity activity) {
+	}
+
+	@Override
+	public void onActivityResumed(Activity activity) {
+	}
+
+	@Override
+	public void onActivityPaused(Activity activity) {
+	}
+
+	@Override
+	public void onActivityStopped(Activity activity) {
+	}
+
+	@Override
+	public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
+	}
+
+	@Override
+	public void onActivityDestroyed(Activity activity) {
+	}
+
+}
