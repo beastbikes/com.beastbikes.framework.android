@@ -1,5 +1,8 @@
 package com.beastbikes.framework.android.cache;
 
+import java.io.File;
+
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.LruCache;
 
@@ -14,6 +17,16 @@ import com.beastbikes.framework.android.schedule.RequestQueueManager;
  * 
  */
 public class CacheManager implements ImageCache {
+
+	public static final File getFile(Context ctx, String... segment) {
+		File file = ctx.getExternalCacheDir();
+
+		for (int i = 0; i < segment.length; i++) {
+			file = new File(file, segment[i]);
+		}
+
+		return file;
+	}
 
 	private final LruCache<String, Bitmap> images;
 
