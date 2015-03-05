@@ -30,17 +30,8 @@ public class CacheManager implements ImageCache {
 		return instance;
 	}
 
-	public static final File getFile(Context ctx, String... segment) {
-		File file = ctx.getExternalCacheDir();
-
-		for (int i = 0; i < segment.length; i++) {
-			file = new File(file, segment[i]);
-		}
-
-		return file;
-	}
-
 	private final LruCache<String, Bitmap> images;
+	private final LruCache<String, String> values;
 
 	private CacheManager() {
 		final int cacheSize = (int) (Runtime.getRuntime().maxMemory() / 8);
@@ -52,6 +43,32 @@ public class CacheManager implements ImageCache {
 			}
 
 		};
+		this.values = new LruCache<String, String>(cacheSize) {
+
+			@Override
+			protected int sizeOf(String key, String value) {
+				return value.getBytes().length;
+			}
+
+		};
+	}
+
+	public File lookup(Context ctx, String... segment) {
+		File file = ctx.getExternalCacheDir();
+
+		for (int i = 0; i < segment.length; i++) {
+			file = new File(file, segment[i]);
+		}
+
+		return file;
+	}
+
+	public String getString(String key) {
+		return this.values.get(key);
+	}
+
+	public void putString(String key, String value) {
+		this.values.put(key, value);
 	}
 
 	@Override
