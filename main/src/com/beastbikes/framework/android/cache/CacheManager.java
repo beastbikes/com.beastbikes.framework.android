@@ -4,11 +4,13 @@ import java.io.File;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.LruCache;
 
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.ImageLoader.ImageCache;
 import com.beastbikes.framework.android.schedule.RequestQueueManager;
+import com.beastbikes.framework.android.utils.FileUtils;
 
 /**
  * The cache manager
@@ -17,6 +19,16 @@ import com.beastbikes.framework.android.schedule.RequestQueueManager;
  * 
  */
 public class CacheManager implements ImageCache {
+
+	private static CacheManager instance = null;
+
+	public static synchronized final CacheManager getInstance() {
+		if (null == instance) {
+			instance = new CacheManager();
+		}
+
+		return instance;
+	}
 
 	public static final File getFile(Context ctx, String... segment) {
 		File file = ctx.getExternalCacheDir();
@@ -61,6 +73,31 @@ public class CacheManager implements ImageCache {
 	 */
 	public ImageLoader getImageLoader(RequestQueueManager rqm) {
 		return new ImageLoader(rqm.getRequestQueue(), this);
+	}
+
+	public Bitmap loadBitmapFromFile(String path) {
+		final BitmapFactory.Options opts = new BitmapFactory.Options();
+		opts.inJustDecodeBounds = false;
+		opts.inPreferredConfig = Bitmap.Config.ARGB_4444;
+		opts.inPurgeable = true;
+		opts.inInputShareable = true;
+		opts.inSampleSize = 2;
+		final Bitmap bmp = BitmapFactory.decodeFile(path, opts);
+
+		try {
+			return bmp;
+		} finally {
+			this.putBitmap(path, bmp);
+		}
+	}
+
+	public void clear(Context context) {
+		final File root = context.getExternalCacheDir();
+		final File[] files = root.listFiles();
+
+		for (int i = 0; i < files.length; i++) {
+			FileUtils.delete(files[i], true);
+		}
 	}
 
 }
