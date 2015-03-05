@@ -15,10 +15,7 @@ import java.security.NoSuchAlgorithmException;
  * @author johnson
  * 
  */
-public class AlgorithmUtils {
-
-	private AlgorithmUtils() {
-	}
+public final class AlgorithmUtils {
 
 	/**
 	 * Returns the MD5 of the specified string
@@ -86,6 +83,9 @@ public class AlgorithmUtils {
 		}
 
 		return hex.toString();
+	}
+
+	private AlgorithmUtils() {
 	}
 
 }

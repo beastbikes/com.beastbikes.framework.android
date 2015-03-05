@@ -1,7 +1,5 @@
 package com.beastbikes.framework.android;
 
-import java.util.Locale;
-
 import android.app.Activity;
 import android.app.Application;
 import android.app.Application.ActivityLifecycleCallbacks;
@@ -10,9 +8,6 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 
-import com.beastbikes.framework.business.BusinessContext;
-import com.beastbikes.framework.persistence.android.SQLitePersistenceManager;
-
 /**
  * An implementation of interface {@link ApplicationContext} for Android
  * 
@@ -20,19 +15,7 @@ import com.beastbikes.framework.persistence.android.SQLitePersistenceManager;
  * 
  */
 public abstract class ApplicationContext extends Application implements
-		ActivityLifecycleCallbacks, BusinessContext {
-
-	public abstract SQLitePersistenceManager getPersistenceManager();
-
-	@Override
-	public String getErrorMessage(int errorCode) {
-		return null;
-	}
-
-	@Override
-	public String getErrorMessage(Locale locale, int errorCode) {
-		return null;
-	}
+		ActivityLifecycleCallbacks {
 
 	/**
 	 * Returns the value of the specified meta data

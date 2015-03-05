@@ -10,10 +10,7 @@ import android.content.Context;
  * @author johnson
  * 
  */
-public class ProcessUtils {
-
-	private ProcessUtils() {
-	}
+public final class ProcessUtils {
 
 	/**
 	 * Returns the current process name
@@ -33,6 +30,9 @@ public class ProcessUtils {
 		}
 
 		return null;
+	}
+
+	private ProcessUtils() {
 	}
 
 }
