@@ -64,20 +64,28 @@ public class CacheManager implements ImageCache {
 	}
 
 	public String getString(String key) {
+		if (null == key)
+			return null;
 		return this.values.get(key);
 	}
 
 	public void putString(String key, String value) {
+		if (null == key || null == value)
+			return;
 		this.values.put(key, value);
 	}
 
 	@Override
 	public Bitmap getBitmap(String key) {
+		if (null == key)
+			return null;
 		return this.images.get(key);
 	}
 
 	@Override
 	public void putBitmap(String key, Bitmap bmp) {
+		if (null == key || null == bmp)
+			return;
 		this.images.put(key, bmp);
 	}
 
