@@ -116,8 +116,37 @@ public class CacheManager implements ImageCache {
 		}
 	}
 
+	/**
+	 * Clear all cache data
+	 * 
+	 * @param context
+	 */
 	public void clear(Context context) {
+		this.clearExternalCache(context);
+		this.clearInternalCache(context);
+	}
+
+	/**
+	 * Clear external cache data
+	 * 
+	 * @param context
+	 */
+	public void clearExternalCache(Context context) {
 		final File root = context.getExternalCacheDir();
+		final File[] files = root.listFiles();
+
+		for (int i = 0; i < files.length; i++) {
+			FileUtils.delete(files[i], true);
+		}
+	}
+
+	/**
+	 * Clear internal cache data
+	 * 
+	 * @param context
+	 */
+	public void clearInternalCache(Context context) {
+		final File root = context.getCacheDir();
 		final File[] files = root.listFiles();
 
 		for (int i = 0; i < files.length; i++) {

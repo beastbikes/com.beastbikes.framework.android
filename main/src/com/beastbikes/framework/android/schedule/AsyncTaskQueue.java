@@ -2,27 +2,20 @@ package com.beastbikes.framework.android.schedule;
 
 import java.util.Deque;
 import java.util.LinkedList;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executor;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 
 public class AsyncTaskQueue {
 
-	private static final int CPU_COUNT = Runtime.getRuntime()
-			.availableProcessors();
-
-	private static final int CORE_POOL_SIZE = CPU_COUNT + 1;
-
-	private static final int MAXIMUM_POOL_SIZE = CPU_COUNT * 2 + 1;
-
-	private static final int KEEP_ALIVE = 1;
+	private static final String TAG = "AsyncTaskQueue";
 
 	private static final ThreadFactory THREAD_FACTORY = new ThreadFactory() {
 		private final AtomicInteger count = new AtomicInteger(1);
@@ -34,11 +27,9 @@ public class AsyncTaskQueue {
 
 	};
 
-	private final BlockingQueue<Runnable> workQueue;
-
 	private final SerialExecutor serialExecutor;
 
-	private final ThreadPoolExecutor poolExecutor;
+	private final ScheduledExecutorService scheduledExecutor;
 
 	private static final class SerialExecutor implements Executor {
 
@@ -53,8 +44,7 @@ public class AsyncTaskQueue {
 		}
 
 		public synchronized void execute(final Runnable r) {
-			if (this.queue.poolExecutor.isShutdown())
-				return;
+			Log.v(TAG, "Queue size : " + this.tasks.size());
 
 			this.tasks.offer(new Runnable() {
 				public void run() {
@@ -65,6 +55,7 @@ public class AsyncTaskQueue {
 					}
 				}
 			});
+
 			if (this.active == null) {
 				scheduleNext();
 			}
@@ -72,7 +63,11 @@ public class AsyncTaskQueue {
 
 		protected synchronized void scheduleNext() {
 			if ((this.active = this.tasks.poll()) != null) {
-				this.queue.poolExecutor.execute(this.active);
+				try {
+					this.queue.scheduledExecutor.execute(this.active);
+				} catch (RejectedExecutionException e) {
+					Log.v(TAG, "", e);
+				}
 			}
 		}
 
@@ -82,11 +77,9 @@ public class AsyncTaskQueue {
 	}
 
 	AsyncTaskQueue(Context ctx) {
-		this.workQueue = new LinkedBlockingQueue<Runnable>();
 		this.serialExecutor = new SerialExecutor(this);
-		this.poolExecutor = new ThreadPoolExecutor(CORE_POOL_SIZE,
-				MAXIMUM_POOL_SIZE, KEEP_ALIVE, TimeUnit.SECONDS,
-				this.workQueue, THREAD_FACTORY);
+		this.scheduledExecutor = Executors
+				.newSingleThreadScheduledExecutor(THREAD_FACTORY);
 	}
 
 	/**
@@ -108,12 +101,12 @@ public class AsyncTaskQueue {
 	}
 
 	public void start() {
-		this.poolExecutor.prestartCoreThread();
+		// TODO
 	}
 
 	public void stop() {
 		this.cancelAll(null);
-		this.poolExecutor.shutdownNow();
+		this.scheduledExecutor.shutdownNow();
 	}
 
 }
