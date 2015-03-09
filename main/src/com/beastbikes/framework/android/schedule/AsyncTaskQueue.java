@@ -44,12 +44,12 @@ public class AsyncTaskQueue {
 		}
 
 		public synchronized void execute(final Runnable r) {
-			Log.v(TAG, "Queue size : " + this.tasks.size());
-
 			this.tasks.offer(new Runnable() {
 				public void run() {
 					try {
 						r.run();
+					} catch (Throwable t) {
+						Log.e(TAG, t.getMessage(), t);
 					} finally {
 						scheduleNext();
 					}
