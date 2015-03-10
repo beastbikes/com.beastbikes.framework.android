@@ -47,6 +47,26 @@ public abstract class ApplicationContext extends Application implements
 		}
 	}
 
+	public int getVersionCode() {
+		final String pkg = getPackageName();
+		final PackageManager pm = getPackageManager();
+		try {
+			return pm.getPackageInfo(pkg, 0).versionCode;
+		} catch (NameNotFoundException e) {
+			return -1;
+		}
+	}
+
+	public String getVersionName() {
+		final String pkg = getPackageName();
+		final PackageManager pm = getPackageManager();
+		try {
+			return pm.getPackageInfo(pkg, 0).versionName;
+		} catch (NameNotFoundException e) {
+			return null;
+		}
+	}
+
 	@Override
 	public void onCreate() {
 		super.onCreate();
