@@ -1,5 +1,7 @@
 package com.beastbikes.framework.android;
 
+import java.lang.reflect.Field;
+
 import android.app.Activity;
 import android.app.Application;
 import android.app.Application.ActivityLifecycleCallbacks;
@@ -7,6 +9,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
+import android.view.ViewConfiguration;
 
 /**
  * An implementation of interface {@link ApplicationContext} for Android
@@ -42,6 +45,28 @@ public abstract class ApplicationContext extends Application implements
 		} catch (NameNotFoundException e) {
 			return null;
 		}
+	}
+
+	@Override
+	public void onCreate() {
+		super.onCreate();
+
+		// register activity life-cycle listener
+		this.registerActivityLifecycleCallbacks(this);
+
+		// show action overflow button in force
+		final ViewConfiguration vc = ViewConfiguration.get(this);
+		try {
+			final Class<?> clazz = vc.getClass();
+			final Field f = clazz.getDeclaredField("sHasPermanentMenuKey");
+			if (f != null) {
+				f.setAccessible(true);
+				f.setBoolean(vc, false);
+			}
+		} catch (Exception e) {
+			// ignore
+		}
+
 	}
 
 	@Override
