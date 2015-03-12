@@ -6,6 +6,8 @@ public class ReleasedPackage implements Serializable {
 
 	private static final long serialVersionUID = 7505470345810869637L;
 
+	private String name;
+
 	private String platform;
 
 	private String versionName;
@@ -19,6 +21,14 @@ public class ReleasedPackage implements Serializable {
 	private long packageSize;
 
 	public ReleasedPackage() {
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public String getPlatform() {

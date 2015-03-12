@@ -4,6 +4,8 @@ import java.io.File;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
 
 public final class PackageUtils {
@@ -23,6 +25,40 @@ public final class PackageUtils {
 		intent.setDataAndType(Uri.fromFile(file),
 				"application/vnd.android.package-archive");
 		context.startActivity(intent);
+	}
+
+	/**
+	 * Returns the version code
+	 * 
+	 * @param context
+	 * @return
+	 */
+	public static final int getVersionCode(Context context) {
+		final String pkg = context.getPackageName();
+		final PackageManager pm = context.getPackageManager();
+
+		try {
+			return pm.getPackageInfo(pkg, 0).versionCode;
+		} catch (NameNotFoundException e) {
+			return -1;
+		}
+	}
+
+	/**
+	 * Returns the version name
+	 * 
+	 * @param context
+	 * @return
+	 */
+	public static final String getVersionName(Context context) {
+		final String pkg = context.getPackageName();
+		final PackageManager pm = context.getPackageManager();
+
+		try {
+			return pm.getPackageInfo(pkg, 0).versionName;
+		} catch (NameNotFoundException e) {
+			return null;
+		}
 	}
 
 	private PackageUtils() {
