@@ -15,13 +15,12 @@ public abstract class TelephonyUtils {
 	 * @return the device id
 	 */
 	public static String getDeviceId(Context context) {
-		try {
-			final TelephonyManager tm = (TelephonyManager) context
-					.getSystemService(Context.TELEPHONY_SERVICE);
-			return tm.getDeviceId();
-		} catch (Exception e) {
+		final TelephonyManager tm = (TelephonyManager) context
+				.getSystemService(Context.TELEPHONY_SERVICE);
+		if (null == tm)
 			return null;
-		}
+
+		return tm.getDeviceId();
 	}
 
 	/**
@@ -31,13 +30,12 @@ public abstract class TelephonyUtils {
 	 * @return the SIM serial number
 	 */
 	public static String getSimSerialNumber(Context context) {
-		try {
-			final TelephonyManager tm = (TelephonyManager) context
-					.getSystemService(Context.TELEPHONY_SERVICE);
-			return tm.getSimSerialNumber();
-		} catch (Exception e) {
+		final TelephonyManager tm = (TelephonyManager) context
+				.getSystemService(Context.TELEPHONY_SERVICE);
+		if (null == tm)
 			return null;
-		}
+
+		return tm.getSimSerialNumber();
 	}
 
 	/**
@@ -47,13 +45,12 @@ public abstract class TelephonyUtils {
 	 * @return
 	 */
 	public static int getSimState(Context context) {
-		try {
-			final TelephonyManager tm = (TelephonyManager) context
-					.getSystemService(Context.TELEPHONY_SERVICE);
-			return tm.getSimState();
-		} catch (Exception e) {
+		final TelephonyManager tm = (TelephonyManager) context
+				.getSystemService(Context.TELEPHONY_SERVICE);
+		if (null == tm)
 			return TelephonyManager.SIM_STATE_UNKNOWN;
-		}
+
+		return tm.getSimState();
 	}
 
 	/**
@@ -64,13 +61,12 @@ public abstract class TelephonyUtils {
 	 * @return
 	 */
 	public static int getPhoneType(Context context) {
-		try {
-			final TelephonyManager tm = (TelephonyManager) context
-					.getSystemService(Context.TELEPHONY_SERVICE);
-			return tm.getPhoneType();
-		} catch (Exception e) {
+		final TelephonyManager tm = (TelephonyManager) context
+				.getSystemService(Context.TELEPHONY_SERVICE);
+		if (null == tm)
 			return TelephonyManager.PHONE_TYPE_NONE;
-		}
+
+		return tm.getPhoneType();
 	}
 
 	/**
@@ -80,13 +76,12 @@ public abstract class TelephonyUtils {
 	 * @return
 	 */
 	public static int getNetworkType(Context context) {
-		try {
-			final TelephonyManager tm = (TelephonyManager) context
-					.getSystemService(Context.TELEPHONY_SERVICE);
-			return tm.getNetworkType();
-		} catch (Exception e) {
+		final TelephonyManager tm = (TelephonyManager) context
+				.getSystemService(Context.TELEPHONY_SERVICE);
+		if (null == tm)
 			return TelephonyManager.NETWORK_TYPE_UNKNOWN;
-		}
+
+		return tm.getNetworkType();
 	}
 
 }

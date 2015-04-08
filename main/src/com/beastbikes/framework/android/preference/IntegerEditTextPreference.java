@@ -1,10 +1,15 @@
 package com.beastbikes.framework.android.preference;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import android.content.Context;
 import android.preference.EditTextPreference;
 import android.util.AttributeSet;
 
 public class IntegerEditTextPreference extends EditTextPreference {
+
+	private static final Logger logger = LoggerFactory.getLogger(IntegerEditTextPreference.class);
 
 	public IntegerEditTextPreference(Context context) {
 		this(context, null);
@@ -39,6 +44,7 @@ public class IntegerEditTextPreference extends EditTextPreference {
 		try {
 			return persistInt(Long.decode(value).intValue());
 		} catch (NumberFormatException e) {
+			logger.error("Invalid format", e);
 			return false;
 		}
 	}

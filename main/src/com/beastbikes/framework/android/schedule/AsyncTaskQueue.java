@@ -9,13 +9,15 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
 
 public class AsyncTaskQueue {
 
-	private static final String TAG = "AsyncTaskQueue";
+	private static final Logger logger = LoggerFactory.getLogger(AsyncTaskQueue.class);
 
 	private static final ThreadFactory THREAD_FACTORY = new ThreadFactory() {
 		private final AtomicInteger count = new AtomicInteger(1);
@@ -49,7 +51,7 @@ public class AsyncTaskQueue {
 					try {
 						r.run();
 					} catch (Throwable t) {
-						Log.e(TAG, t.getMessage(), t);
+						logger.error(t.getMessage(), t);
 					} finally {
 						scheduleNext();
 					}
@@ -66,7 +68,7 @@ public class AsyncTaskQueue {
 				try {
 					this.queue.scheduledExecutor.execute(this.active);
 				} catch (RejectedExecutionException e) {
-					Log.v(TAG, "", e);
+					logger.error(e.getMessage(), e);
 				}
 			}
 		}

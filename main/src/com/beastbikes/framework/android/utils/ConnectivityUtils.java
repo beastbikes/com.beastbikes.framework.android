@@ -16,6 +16,9 @@ public final class ConnectivityUtils {
 	public static NetworkInfo getActiveNetwork(Context context) {
 		final ConnectivityManager cm = (ConnectivityManager) context
 				.getSystemService(Context.CONNECTIVITY_SERVICE);
+		if (null == cm)
+			return null;
+
 		return cm.getActiveNetworkInfo();
 	}
 

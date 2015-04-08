@@ -9,6 +9,9 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Algorithm related utility
  * 
@@ -16,6 +19,8 @@ import java.security.NoSuchAlgorithmException;
  * 
  */
 public final class AlgorithmUtils {
+
+	private static final Logger logger = LoggerFactory.getLogger(AlgorithmUtils.class);
 
 	/**
 	 * Returns the MD5 of the specified string
@@ -28,6 +33,7 @@ public final class AlgorithmUtils {
 			final MessageDigest md = MessageDigest.getInstance("MD5");
 			return toHexString(md.digest(s.getBytes()));
 		} catch (NoSuchAlgorithmException e) {
+			logger.error(e.getMessage(), e);
 			throw new UnsupportedOperationException(e);
 		}
 	}
@@ -62,6 +68,7 @@ public final class AlgorithmUtils {
 
 			return new BigInteger(1, md.digest()).toString(16);
 		} catch (NoSuchAlgorithmException e) {
+			logger.error(e.getMessage(), e);
 			throw new UnsupportedOperationException(e);
 		}
 	}

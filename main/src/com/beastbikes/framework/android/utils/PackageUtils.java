@@ -2,6 +2,9 @@ package com.beastbikes.framework.android.utils;
 
 import java.io.File;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -9,6 +12,8 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
 
 public final class PackageUtils {
+
+	private static final Logger logger = LoggerFactory.getLogger(PackageUtils.class);
 
 	/**
 	 * Install the specified package
@@ -40,6 +45,7 @@ public final class PackageUtils {
 		try {
 			return pm.getPackageInfo(pkg, 0).versionCode;
 		} catch (NameNotFoundException e) {
+			logger.error(e.getMessage(), e);
 			return -1;
 		}
 	}
@@ -57,6 +63,7 @@ public final class PackageUtils {
 		try {
 			return pm.getPackageInfo(pkg, 0).versionName;
 		} catch (NameNotFoundException e) {
+			logger.error(e.getMessage(), e);
 			return null;
 		}
 	}

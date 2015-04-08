@@ -20,9 +20,12 @@ public final class ProcessUtils {
 	 * @return the current process name
 	 */
 	public static String getCurrentProcessName(Context ctx) {
-		final int pid = android.os.Process.myPid();
 		final ActivityManager am = (ActivityManager) ctx
 				.getSystemService(Context.ACTIVITY_SERVICE);
+		if (null == am)
+			return null;
+
+		final int pid = android.os.Process.myPid();
 		for (final RunningAppProcessInfo rapi : am.getRunningAppProcesses()) {
 			if (rapi.pid == pid) {
 				return rapi.processName;
