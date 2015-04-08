@@ -13,7 +13,6 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.view.ViewConfiguration;
-import ch.qos.logback.classic.android.BasicLogcatConfigurator;
 
 import com.beastbikes.framework.android.runtime.DefaultUncaughtExceptionHandler;
 
@@ -25,10 +24,6 @@ import com.beastbikes.framework.android.runtime.DefaultUncaughtExceptionHandler;
  */
 public abstract class ApplicationContext extends Application implements
 		ActivityLifecycleCallbacks {
-
-	static {
-		BasicLogcatConfigurator.configureDefaultContext();
-	}
 
 	private static final Logger logger = LoggerFactory.getLogger(ApplicationContext.class);
 
