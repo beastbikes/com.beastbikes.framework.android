@@ -7,14 +7,14 @@ import java.net.UnknownHostException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class UncaughtExceptionHandlerChain implements UncaughtExceptionHandler {
+public class DefaultUncaughtExceptionHandler implements UncaughtExceptionHandler {
 
-	private static final Logger logger = LoggerFactory.getLogger(UncaughtExceptionHandlerChain.class);
+	private static final Logger logger = LoggerFactory.getLogger(DefaultUncaughtExceptionHandler.class);
 
 	private UncaughtExceptionHandler handler;
 
-	public UncaughtExceptionHandlerChain(UncaughtExceptionHandler handler) {
-		this.handler = handler;
+	public DefaultUncaughtExceptionHandler() {
+		this.handler = Thread.getDefaultUncaughtExceptionHandler();
 	}
 
 	@Override

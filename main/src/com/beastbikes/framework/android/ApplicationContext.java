@@ -16,7 +16,7 @@ import android.os.Bundle;
 import android.view.ViewConfiguration;
 import ch.qos.logback.classic.android.BasicLogcatConfigurator;
 
-import com.beastbikes.framework.android.runtime.UncaughtExceptionHandlerChain;
+import com.beastbikes.framework.android.runtime.DefaultUncaughtExceptionHandler;
 
 /**
  * An implementation of interface {@link ApplicationContext} for Android
@@ -66,10 +66,7 @@ public abstract class ApplicationContext extends Application implements
 		super.onCreate();
 
 		// setup uncaught exception handler
-		final UncaughtExceptionHandler handler = Thread.getDefaultUncaughtExceptionHandler();
-		if (null != handler) {
-			Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandlerChain(handler));
-		}
+		Thread.setDefaultUncaughtExceptionHandler(new DefaultUncaughtExceptionHandler());
 
 		// register activity life-cycle listener
 		this.registerActivityLifecycleCallbacks(this);
