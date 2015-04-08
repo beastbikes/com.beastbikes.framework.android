@@ -1,6 +1,5 @@
 package com.beastbikes.framework.android;
 
-import java.lang.Thread.UncaughtExceptionHandler;
 import java.lang.reflect.Field;
 
 import org.slf4j.Logger;
