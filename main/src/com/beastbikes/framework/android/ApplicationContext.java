@@ -1,6 +1,10 @@
 package com.beastbikes.framework.android;
 
+import java.lang.Thread.UncaughtExceptionHandler;
 import java.lang.reflect.Field;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import android.app.Activity;
 import android.app.Application;
@@ -10,6 +14,9 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.view.ViewConfiguration;
+import ch.qos.logback.classic.android.BasicLogcatConfigurator;
+
+import com.beastbikes.framework.android.runtime.UncaughtExceptionHandlerChain;
 
 /**
  * An implementation of interface {@link ApplicationContext} for Android
@@ -19,6 +26,12 @@ import android.view.ViewConfiguration;
  */
 public abstract class ApplicationContext extends Application implements
 		ActivityLifecycleCallbacks {
+
+	static {
+		BasicLogcatConfigurator.configureDefaultContext();
+	}
+
+	private static final Logger logger = LoggerFactory.getLogger(ApplicationContext.class);
 
 	/**
 	 * Returns the value of the specified meta data
@@ -43,6 +56,7 @@ public abstract class ApplicationContext extends Application implements
 
 			return metaData.getString(key, defaultValue);
 		} catch (NameNotFoundException e) {
+			logger.error(e.getMessage(), e);
 			return null;
 		}
 	}
@@ -50,6 +64,12 @@ public abstract class ApplicationContext extends Application implements
 	@Override
 	public void onCreate() {
 		super.onCreate();
+
+		// setup uncaught exception handler
+		final UncaughtExceptionHandler handler = Thread.getDefaultUncaughtExceptionHandler();
+		if (null != handler) {
+			Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandlerChain(handler));
+		}
 
 		// register activity life-cycle listener
 		this.registerActivityLifecycleCallbacks(this);
@@ -64,9 +84,10 @@ public abstract class ApplicationContext extends Application implements
 				f.setBoolean(vc, false);
 			}
 		} catch (Exception e) {
-			// ignore
+			logger.error(e.getMessage(), e);
 		}
 
+		logger.info("Application " + getPackageName() + " started");
 	}
 
 	@Override
