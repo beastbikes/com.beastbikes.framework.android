@@ -25,6 +25,10 @@ import com.beastbikes.framework.android.runtime.DefaultUncaughtExceptionHandler;
 public abstract class ApplicationContext extends Application implements
 		ActivityLifecycleCallbacks {
 
+    static {
+        System.loadLibrary("trace");
+    }
+
 	private static final Logger logger = LoggerFactory.getLogger(ApplicationContext.class);
 
 	/**
