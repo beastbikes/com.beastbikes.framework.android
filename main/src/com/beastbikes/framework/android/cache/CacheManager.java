@@ -101,12 +101,16 @@ public class CacheManager implements ImageCache {
 	}
 
 	public Bitmap loadBitmapFromFile(String path) {
+		return loadBitmapFromFile(path, 4);
+	}
+
+	public Bitmap loadBitmapFromFile(String path, int sampleSize) {
 		final BitmapFactory.Options opts = new BitmapFactory.Options();
 		opts.inJustDecodeBounds = false;
-		opts.inPreferredConfig = Bitmap.Config.ARGB_4444;
+		opts.inPreferredConfig = Bitmap.Config.ARGB_8888;
 		opts.inPurgeable = true;
 		opts.inInputShareable = true;
-		opts.inSampleSize = 2;
+		opts.inSampleSize = Math.max(2, sampleSize);
 		final Bitmap bmp = BitmapFactory.decodeFile(path, opts);
 
 		try {
