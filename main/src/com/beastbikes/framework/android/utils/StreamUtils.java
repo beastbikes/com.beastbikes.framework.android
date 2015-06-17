@@ -6,8 +6,14 @@ import java.io.InputStream;
 
 public final class StreamUtils {
 
+	private static final int BUFFER_SIZE = 1024 * 1024;
+
 	public static final String readAsString(InputStream is) throws IOException {
-		final byte[] buf = new byte[1024 * 1024];
+		return new String(readAsBytes(is));
+	}
+
+	public static byte[] readAsBytes(InputStream is) throws IOException {
+		final byte[] buf = new byte[BUFFER_SIZE];
 
 		ByteArrayOutputStream baos = null;
 
@@ -19,7 +25,7 @@ public final class StreamUtils {
 			}
 
 			baos.flush();
-			return baos.toString();
+			return baos.toByteArray();
 		} finally {
 			if (null != baos) {
 				try {
@@ -29,9 +35,9 @@ public final class StreamUtils {
 				baos = null;
 			}
 		}
-
 	}
 
 	private StreamUtils() {
 	}
+
 }
