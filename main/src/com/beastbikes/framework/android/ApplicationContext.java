@@ -1,18 +1,23 @@
 package com.beastbikes.framework.android;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Field;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Application;
 import android.app.Application.ActivityLifecycleCallbacks;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.net.http.HttpResponseCache;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.StatFs;
 import android.view.ViewConfiguration;
 
 import com.beastbikes.framework.android.runtime.DefaultUncaughtExceptionHandler;
@@ -30,8 +35,19 @@ public abstract class ApplicationContext extends Application implements
 		System.loadLibrary("trace");
 	}
 
-	private static final Logger logger = LoggerFactory
-			.getLogger(ApplicationContext.class);
+	private static final Logger logger = LoggerFactory.getLogger(ApplicationContext.class);
+
+	private static ApplicationContext instance;
+
+	private Object cache;
+
+	public static final ApplicationContext getInstance() {
+		return instance;
+	}
+
+	public ApplicationContext() {
+		ApplicationContext.instance = this;
+	}
 
 	/**
 	 * Returns the value of the specified meta data
@@ -62,6 +78,8 @@ public abstract class ApplicationContext extends Application implements
 	}
 
 	@Override
+	@SuppressWarnings("deprecation")
+	@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 	public void onCreate() {
 		super.onCreate();
 
@@ -82,6 +100,32 @@ public abstract class ApplicationContext extends Application implements
 			}
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
+		}
+
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+			final long blockCount;
+			final long blockSize;
+
+			try {
+				final File dir = new File(getCacheDir(), "http");
+				final StatFs stat = new StatFs(dir.getAbsolutePath());
+
+				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+					blockCount = stat.getBlockCountLong();
+				} else {
+					blockCount = stat.getBlockCount();
+				}
+
+				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+					blockSize = stat.getBlockSizeLong();
+				} else {
+					blockSize = stat.getBlockSize();
+				}
+
+				this.cache = HttpResponseCache.install(dir, blockCount * blockSize);
+			} catch (IOException e) {
+				logger.error("Install http response cache error", e);
+			}
 		}
 
 		logger.info(getLineSeparator(80, getPackageName()));
@@ -137,6 +181,21 @@ public abstract class ApplicationContext extends Application implements
 
 	@Override
 	public void onActivityDestroyed(Activity activity) {
+	}
+
+	@Override
+	public void onTerminate() {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+			if (this.cache instanceof HttpResponseCache) {
+				try {
+					((HttpResponseCache) this.cache).close();
+				} catch (IOException e) {
+					logger.error("Close http response cache error", e);
+				}
+			}
+		}
+
+		super.onTerminate();
 	}
 
 	private static String getLineSeparator(int width, String title) {
