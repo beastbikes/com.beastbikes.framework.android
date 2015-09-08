@@ -1,8 +1,8 @@
 package com.beastbikes.framework.android;
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +14,6 @@ import android.app.Application.ActivityLifecycleCallbacks;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.net.http.HttpResponseCache;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.StatFs;
@@ -102,30 +101,34 @@ public abstract class ApplicationContext extends Application implements
 			logger.error(e.getMessage(), e);
 		}
 
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-			final long blockCount;
-			final long blockSize;
+		final long blockCount;
+		final long blockSize;
 
-			try {
-				final File dir = new File(getCacheDir(), "http");
-				final StatFs stat = new StatFs(dir.getAbsolutePath());
-
-				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-					blockCount = stat.getBlockCountLong();
-				} else {
-					blockCount = stat.getBlockCount();
-				}
-
-				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-					blockSize = stat.getBlockSizeLong();
-				} else {
-					blockSize = stat.getBlockSize();
-				}
-
-				this.cache = HttpResponseCache.install(dir, blockCount * blockSize);
-			} catch (IOException e) {
-				logger.error("Install http response cache error", e);
+		try {
+			final File dir = new File(getCacheDir(), "http");
+			if (!dir.exists()) {
+				dir.mkdirs();
 			}
+
+			final StatFs stat = new StatFs(dir.getAbsolutePath());
+
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+				blockCount = stat.getBlockCountLong();
+			} else {
+				blockCount = stat.getBlockCount();
+			}
+
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+				blockSize = stat.getBlockSizeLong();
+			} else {
+				blockSize = stat.getBlockSize();
+			}
+
+			final Class<?> clazz = Class.forName("android.net.http.HttpResponseCache");
+			final Method install = clazz.getMethod("install", File.class, long.class);
+			this.cache = install.invoke(clazz, dir, blockCount * blockSize);
+		} catch (final Exception e) {
+			logger.error("Install http response cache error", e);
 		}
 
 		logger.info(getLineSeparator(80, getPackageName()));
@@ -185,13 +188,13 @@ public abstract class ApplicationContext extends Application implements
 
 	@Override
 	public void onTerminate() {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-			if (this.cache instanceof HttpResponseCache) {
-				try {
-					((HttpResponseCache) this.cache).close();
-				} catch (IOException e) {
-					logger.error("Close http response cache error", e);
-				}
+		if (null != this.cache) {
+			try {
+				final Class<?> clazz = Class.forName("android.net.http.HttpResponseCache");
+				final Method close = clazz.getMethod("close");
+				close.invoke(this.cache);
+			} catch (final Exception e) {
+				logger.error("Close http response cache error", e);
 			}
 		}
 
